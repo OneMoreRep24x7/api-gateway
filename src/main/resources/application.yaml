@@ -2,38 +2,75 @@ spring:
   application:
     name: api-gateway
   config:
-    import: "optional:configserver:http://localhost:8888"
+    import: "optional:configserver:http://3.109.184.195:8888"
   cloud:
-      gateway:
-        routes:
-          - id: auth-service
-            uri: lb://auth-service
-            predicates:
-              - Path=/auth/**
+    gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - 'http://localhost:4200'
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+      routes:
 
-
-
-
+        - id: auth-service
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/api/v1/auth/**
+        - id: authority-service-user
+          uri: lb://AUTHORITY-SERVICE
+          predicates:
+            - Path=/api/v1/user/**
+          filters:
+            - AuthenticationFilter
+        - id: authority-service-trainer
+          uri: lb://AUTHORITY-SERVICE
+          predicates:
+            - Path=/api/v1/trainer/**
+          filters:
+            - AuthenticationFilter
+        - id: authority-service-tracking
+          uri: lb://AUTHORITY-SERVICE
+          predicates:
+            - Path=/api/v1/tracking/**
+          filters:
+            - AuthenticationFilter
+        - id: plan-service
+          uri: lb://PLAN-SERVICE
+          predicates:
+            - Path=/api/v1/plans/**
+          filters:
+            - AuthenticationFilter
+        - id: communication-service
+          uri: lb://COMMUNICATION-SERVICE
+          predicates:
+            - Path=/api/v1/chats/**
 
 
 server:
-    port: 8765
+  port: 8765
 
 eureka:
-    instance:
-      hostname: localhost
-    client:
-      service-url:
-        defaultZone: http://localhost:8761/eureka
+  instance:
+    hostname: localhost
+  client:
+    service-url:
+      defaultZone: http://3.109.184.195:8761/eureka
 
 management:
-    tracing:
-      sampling:
-        probability: 1.0
-
+  tracing:
+    sampling:
+      probability: 1.0
 
 application:
   security:
     jwt:
       secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
-
