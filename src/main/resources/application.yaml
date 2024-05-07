@@ -9,7 +9,7 @@ spring:
         corsConfigurations:
           '[/**]':
             allowedOrigins:
-              - 'http://localhost:4200'
+              - 'https://one-more-rep-frontend.vercel.app/'
             allowedMethods:
               - GET
               - POST
